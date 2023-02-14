@@ -3,16 +3,19 @@ package assess;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.Console;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.ObjectOutputStream;
+import java.util.ObjectInputStream;
+import java.util.FileOutputStream;
+import java.util.FileInputStream;
 
 public class Main {
     public static void main(String[] args) throws UnknownHostException, IOException {
@@ -29,16 +32,20 @@ public class Main {
     try {
         while (true) {
 
-            DataInputStream dis = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+            OutputStream os = socket.getOutputStream();
+            FileOutputStream fos = new FileOutputStream(os);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
 
-            DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+            InputStream is = socket.getInputStream();
+            FileInputStream fis = new FileInputStream(is);
+            ObjectInputStream ois = new ObjectInputStream(fis);
 
-            Console cons = System.console();
-            input = cons.readLine("Receive message from server?");
-            dos.writeUTF(input);
-            dos.flush();
+            Scanner scanner = new Scanner(System.in);
+            input = scanner.nextLine();
+            oos.writeUTF(input);
+            oos.flush();
 
-            messageReceived = dis.readUTF();
+            messageReceived = ois.readUTF();
             System.out.println("From the server: " + messageReceived);
 
             List<String> meanList = new ArrayList<String>(Arrays.asList(messageReceived.split(",")));
@@ -50,14 +57,14 @@ public class Main {
             average = sum / meanList.size();
             std_d = Math.sqrt((squareSum) / meanList.size());
 
-            dos.writeUTF("Koh Kai Xiang");
-            dos.writeUTF("koh_kaixiang_8@hotmail.com");
-            dos.writeFloat(average);
-            dos.writeFloat(std_d);
+            oos.writeUTF("Koh Kai Xiang");
+            oos.writeUTF("koh_kaixiang_8@hotmail.com");
+            oos.writeFloat(average);
+            oos.writeFloat(std_d);
 
         
-        dos.close();
-        dis.close();
+        oos.close();
+        ois.close();
         socket.close();
         }
      } catch (EOFException ex) {
