@@ -20,6 +20,7 @@ import java.util.FileInputStream;
 public class Main {
     public static void main(String[] args) throws UnknownHostException, IOException {
         
+        // connecting to localhost at port 5000
         Socket socket = new Socket("localhost", 5000);
 
         String messageReceived = "";
@@ -40,6 +41,7 @@ public class Main {
             FileInputStream fis = new FileInputStream(is);
             ObjectInputStream ois = new ObjectInputStream(fis);
 
+            // instantiate the Scanner class
             Scanner scanner = new Scanner(System.in);
             input = scanner.nextLine();
             oos.writeUTF(input);
@@ -48,15 +50,21 @@ public class Main {
             messageReceived = ois.readUTF();
             System.out.println("From the server: " + messageReceived);
 
+            // putting the message received from server to an ArrayList, split by comma
             List<String> meanList = new ArrayList<String>(Arrays.asList(messageReceived.split(",")));
 
             for (int i = 0; i < meanList.size(); i++) {
+                // summing up the list
                 sum = sum + Float.parseFloat(meanList.get(i));
+                // calculate numerator for standard deviation formula
                 squareSum += Math.pow((Float.parseFloat(meanList.get(i)) - average), 2);
             }
+            // calculate mean
             average = sum / meanList.size();
+            // calculate standard deviation
             std_d = Math.sqrt((squareSum) / meanList.size());
 
+            // write over for server to receive the following messages
             oos.writeUTF("Koh Kai Xiang");
             oos.writeUTF("koh_kaixiang_8@hotmail.com");
             oos.writeFloat(average);
