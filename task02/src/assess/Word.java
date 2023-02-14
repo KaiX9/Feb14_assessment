@@ -20,6 +20,15 @@ public class Word {
             System.out.println("File name: " + file.getName());
             System.out.println("File path: " + file.getAbsoluteFile());
             System.out.println("Size: " + file.getTotalSpace());
+
+            sc = new Scanner(file);
+            String input;
+            while (sc.hasNextLine()) {
+                input = sc.nextLine().replaceAll("\\p{P}", "");
+                sb.append(input + " ");
+            }
+            System.out.println("Contents of the file: " + sb.toString());
+            System.out.println(" ");
         }
     }
 }
